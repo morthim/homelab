@@ -1,0 +1,32 @@
+---
+services:
+  caddy:
+    container_name: caddy
+    image: git.morthimer.fr/morthimer/caddy-homelab
+    ports:
+      - 8080:80
+      - 8443:443
+    environment:
+      - CADDY_INGRESS_NETWORKS=dmz
+      # If you are not using Podman, comment the following line
+      - CADDY_DOCKER_NO_SCOPE=true
+    env_file: .env
+    networks:
+      - dmz
+    volumes:
+      - ${SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+      - ./appdata:/data
+    restart: unless-stopped
+    labels:
+      # Caddy configuration (https://github.com/lucaslorentz/caddy-docker-proxy?tab=readme-ov-file#table-of-contents)
+      # Global ACME DNS settings
+      caddy.acme_dns: ovh
+      caddy.acme_dns.endpoint: "{env.ENDPOINT}"
+      caddy.acme_dns.application_key: "{env.APP_KEY}"
+      caddy.acme_dns.application_secret: "{env.APP_SECRET}"
+      caddy.acme_dns.consumer_key: "{env.CONSUMER_KEY}"
+      ## Debug
+      # caddy.log.level: DEBUG
+networks:
+  dmz:
+    external: true

@@ -1,0 +1,25 @@
+services:
+  dockge:
+    container_name: dockge
+    image: louislam/dockge:1
+    restart: unless-stopped
+    volumes:
+      - ${SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+      - ./appdata:/app/data
+      - /opt/stacks:/opt/stacks
+    environment:
+      - DOCKGE_STACKS_DIR=/opt/stacks
+    networks:
+      - dmz
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@dockge: host dockge.{$$INT_DOMAIN}
+      caddy.1_handle: "@dockge"
+      caddy.1_handle.reverse_proxy: "{{upstreams 5001}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

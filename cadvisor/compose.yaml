@@ -1,0 +1,34 @@
+services:
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    command:
+      - --podman=unix:///var/run/podman/podman.sock
+      - --housekeeping_interval=10s
+      - --docker_only=true
+    volumes:
+      - /:/rootfs:ro
+      - /sys:/sys:ro
+      - /dev/disk:/dev/disk:ro
+      - ${SOCKET:-/var/run/podman}:/var/run/podman:ro
+    devices:
+      - /dev/kmesg
+    privileged: true
+    restart: always
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@cadvisor: host cadvisor.{$$INT_DOMAIN}
+      caddy.1_handle: "@cadvisor"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+      # Diun
+      diun.enable: true
+    networks:
+      - monitoring
+      - proxy
+
+networks:
+  monitoring:
+    external: true
+  proxy:
+    external: true

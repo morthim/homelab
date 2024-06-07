@@ -1,0 +1,26 @@
+services:
+  code-server:
+    container_name: code-server
+    image: lscr.io/linuxserver/code-server
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - ./appconf:/config
+    environment:
+      # If you're not using Podman, set PUID and PGID to 1000 
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Paris
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@code: host code.{$$INT_DOMAIN}
+      caddy.1_handle: "@code"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8443}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  proxy:
+    external: true

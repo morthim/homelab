@@ -1,0 +1,25 @@
+services:
+  diun:
+    container_name: diun
+    image: crazymax/diun:4
+    command: serve
+    hostname: $HOST # server hostname
+    volumes:
+      - ./appdata:/data
+      - $SOCKET:/var/run/docker.sock
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Paris
+      - DIUN_WATCH_WORKERS=20
+      - DIUN_WATCH_SCHEDULE=0 */6 * * *
+      - DIUN_WATCH_JITTER=30s
+      - DIUN_PROVIDERS_DOCKER=true
+    networks:
+      - proxy
+    labels:
+      # Diun
+      diun.enable: true
+
+networks:
+  proxy:
+    external: true

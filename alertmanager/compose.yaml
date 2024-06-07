@@ -1,0 +1,16 @@
+services:
+  alertmanager:
+    container_name: alertmanager
+    image: quay.io/prometheus/alertmanager
+    restart: unless-stopped
+    volumes:
+      - ./appconf/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      - monitoring
+    labels:
+      # Diun
+      diun.enable: true
+      
+networks:
+  monitoring:
+    external: true

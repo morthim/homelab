@@ -4,7 +4,7 @@ services:
     image: lscr.io/linuxserver/code-server
     restart: unless-stopped
     networks:
-      - proxy
+      - dmz
     volumes:
       - ./appconf:/config
     environment:
@@ -22,5 +22,5 @@ services:
       diun.enable: true
 
 networks:
-  proxy:
+  dmz:
     external: true

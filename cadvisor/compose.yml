@@ -25,10 +25,10 @@ services:
       diun.enable: true
     networks:
       - monitoring
-      - proxy
+      - dmz
 
 networks:
   monitoring:
     external: true
-  proxy:
+  dmz:
     external: true

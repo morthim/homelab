@@ -15,11 +15,11 @@ services:
       - DIUN_WATCH_JITTER=30s
       - DIUN_PROVIDERS_DOCKER=true
     networks:
-      - proxy
+      - dmz
     labels:
       # Diun
       diun.enable: true
 
 networks:
-  proxy:
+  dmz:
     external: true

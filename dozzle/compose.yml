@@ -1,0 +1,24 @@
+services:
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - $SOCKET:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - monitoring
+      - dmz
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@dozzle: host dozzle.{$$INT_DOMAIN}
+      caddy.1_handle: "@dozzle"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  monitoring:
+    external: true
+  dmz:
+    external: true

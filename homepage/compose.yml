@@ -1,0 +1,23 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage
+    container_name: homepage
+    volumes:
+      - ./appconf:/app/config
+      - $SOCKET:/var/run/docker.sock
+    env_file: .env
+    restart: unless-stopped
+    networks:
+      - dmz
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@homepage: host homepage.{$$INT_DOMAIN}
+      caddy.1_handle: "@homepage"
+      caddy.1_handle.reverse_proxy: "{{upstreams 3000}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

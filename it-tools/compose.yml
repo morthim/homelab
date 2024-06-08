@@ -1,0 +1,19 @@
+services:
+  it-tools:
+    container_name: it-tools
+    image: corentinth/it-tools
+    restart: unless-stopped
+    networks:
+      - dmz
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@it-tools: "host it-tools.{$$INT_DOMAIN}"
+      caddy.1_handle: "@it-tools"
+      caddy.1_handle.reverse_proxy: "{{upstreams 80}}"
+      # Diun
+      diun.enable: true
+      
+networks:
+  dmz:
+    external: true

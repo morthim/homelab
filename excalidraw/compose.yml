@@ -1,0 +1,21 @@
+services:
+  excalidraw:
+    container_name: excalidraw
+    image: excalidraw/excalidraw
+    restart: unless-stopped
+    networks:
+      - dmz
+    healthcheck:
+      disable: true
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@draw: host draw.{$$INT_DOMAIN}
+      caddy.1_handle: "@draw"
+      caddy.1_handle.reverse_proxy: "{{upstreams 80}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

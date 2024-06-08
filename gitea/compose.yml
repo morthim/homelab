@@ -1,0 +1,29 @@
+services:
+  gitea:
+    container_name: gitea
+    image: gitea/gitea:1
+    networks:
+      - dmz
+      - ldap
+    ports:
+      - 2222:22
+    volumes:
+      - ./appdata:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    env_file: .env
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@git: host git.{$$INT_DOMAIN}
+      caddy.1_handle: "@git"
+      caddy.1_handle.reverse_proxy: "{{upstreams 3000}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true
+  ldap:
+    external: true

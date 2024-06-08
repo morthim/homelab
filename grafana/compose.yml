@@ -1,0 +1,26 @@
+services:
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    user: 0:0 # Rootless Podman
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - ./appdata:/var/lib/grafana
+    networks:
+      - dmz
+      - monitoring
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@grafana: host grafana.{$$INT_DOMAIN}
+      caddy.1_handle: "@grafana"
+      caddy.1_handle.reverse_proxy: "{{upstreams 3000}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true
+  monitoring:
+    external: true

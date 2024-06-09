@@ -1,0 +1,30 @@
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./appconf:/etc/prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      - --web.enable-lifecycle
+    networks:
+      - dmz
+      - monitoring
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@prometheus: host prometheus.{$$INT_DOMAIN}
+      caddy.1_handle: "@prometheus"
+      caddy.1_handle.reverse_proxy: "{{upstreams 9090}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true
+  monitoring:
+    external: true

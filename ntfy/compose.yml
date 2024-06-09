@@ -1,0 +1,28 @@
+services:
+  ntfy:
+    container_name: ntfy
+    image: binwiederhier/ntfy
+    command: serve
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - /var/cache/ntfy:/var/cache/ntfy
+      - ./appconf:/etc/ntfy
+    restart: unless-stopped
+    networks:
+      - dmz
+      - monitoring
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@ntfy: "host ntfy.{$$INT_DOMAIN}"
+      caddy.1_handle: "@ntfy"
+      caddy.1_handle.reverse_proxy: "{{upstreams 80}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true
+  monitoring:
+    external: true

@@ -1,0 +1,24 @@
+services:
+  redlib:
+    container_name: redlib
+    image: quay.io/redlib/redlib
+    restart: unless-stopped
+    networks:
+      - dmz
+    environment:
+      - REDLIB_ROBOTS_DISABLE_INDEXING=on
+      - REDLIB_DEFAULT_THEME=black
+      - REDLIB_DEFAULT_LAYOUT=clean
+      - REDLIB_DEFAULT_WIDE=on
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@redlib: host redlib.{$$INT_DOMAIN}
+      caddy.1_handle: "@redlib"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

@@ -1,0 +1,25 @@
+services:
+  yarr:
+    container_name: yarr
+    image: ghcr.io/wakeful-cloud/yarr
+    volumes:
+      - ./appdata:/data
+    environment:
+      # Rootless Podman
+      - UID=0
+      - GID=0
+    networks:
+      - dmz
+    restart: unless-stopped
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@rss: host rss.{$$INT_DOMAIN}
+      caddy.1_handle: "@rss"
+      caddy.1_handle.reverse_proxy: "{{upstreams 7070}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

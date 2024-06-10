@@ -1,0 +1,19 @@
+services:
+  s-pdf:
+    container_name: s-pdf
+    image: frooodle/s-pdf
+    restart: unless-stopped
+    networks:
+      - dmz
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@spdf: "host spdf.{$$INT_DOMAIN}"
+      caddy.1_handle: "@spdf"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

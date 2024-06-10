@@ -1,0 +1,26 @@
+services:
+  shiori:
+    container_name: shiori
+    image: ghcr.io/go-shiori/shiori
+    restart: unless-stopped
+    user: 0:0 # Rootless Podman
+    environment:
+      SHIORI_DIR: /data
+      SHIORI_HTTP_SECRET_KEY: $HTTP_SECRET_KEY
+      TZ: Europe/Paris
+    volumes:
+      - ./appdata:/data
+    networks:
+      - dmz
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@shiori: "host shiori.{$$INT_DOMAIN}"
+      caddy.1_handle: "@shiori"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

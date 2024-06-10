@@ -27,6 +27,7 @@ services:
       caddy.acme_dns.consumer_key: "{env.CONSUMER_KEY}"
       ## Debug
       # caddy.log.level: DEBUG
+      
 networks:
   dmz:
     external: true

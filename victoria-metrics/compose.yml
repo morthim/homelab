@@ -1,0 +1,19 @@
+services:
+  victoria-metrics-single:
+    container_name: victoria-metrics-single
+    image: victoriametrics/victoria-metrics:stable
+    volumes:
+      - ./appdata:/victoria-metrics-data
+    command:
+      - -retentionPeriod=12
+      - -maxLabelsPerTimeseries=50
+    restart: unless-stopped
+    networks:
+      - monitoring
+    labels:
+      # Diun
+      diun.enable: true
+
+networks:
+  monitoring:
+    external: true

@@ -1,0 +1,20 @@
+services:
+  whoogle:
+    container_name: whoogle
+    image: benbusby/whoogle-search
+    env_file: .env
+    restart: unless-stopped
+    networks:
+      - dmz
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@search: host search.{$$INT_DOMAIN}
+      caddy.1_handle: "@search"
+      caddy.1_handle.reverse_proxy: "{{upstreams 5000}}"
+      # Diun
+      diun.enable: true
+
+networks:
+  dmz:
+    external: true

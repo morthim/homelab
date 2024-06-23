@@ -1,0 +1,42 @@
+services:
+  umami:
+    container_name: umami
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    environment:
+      DATABASE_URL: postgresql://$USER:$PASS@umami-db:5432/$DB
+      DATABASE_TYPE: postgresql
+      APP_SECRET: $SECRET
+    depends_on:
+      - umami-db
+    restart: unless-stopped
+    networks:
+      - umami
+      - proxy
+    labels:
+      # Caddy
+      caddy: "*.{$$INT_DOMAIN}"
+      caddy.1_@umami: host umami.{$$INT_DOMAIN}
+      caddy.1_handle: "@umami"
+      caddy.1_handle.reverse_proxy: "{{upstreams 3000}}"
+      # Get real client public IP if behind another proxy
+      # caddy.1_handle.reverse_proxy.header_up: X-Forwarded-For {header.X-Real-IP}
+      # Diun
+      diun.enable: true
+      
+  umami-db:
+    container_name: umami-db
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: $DB
+      POSTGRES_USER: $USER
+      POSTGRES_PASSWORD: $PASS
+    volumes:
+      - ./appdb:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - umami
+networks:
+  umami:
+    external: true
+  proxy:
+    external: true
